@@ -76,14 +76,15 @@ server {
 
 ```cmd
 #[check nginx's site(http://nginx.org/en/download.html) for the latest version]
-NGINX_VERSION=1.14.1
+NGINX_VERSION=1.14.2
 #[check the release notes(https://www.modpagespeed.com/doc/release_notes) for the latest version]
 NPS_VERSION=1.13.35.2-stable
+NGINX_BUILD="nginx-x0ix7n"
 
-mkdir -p /build/nginx-6hl6ty/nginx-${NGINX_VERSION}/debian/modules
+mkdir -p /build/${NGINX_BUILD}/nginx-${NGINX_VERSION}/debian/modules
 
 # ngx_pagespeed
-cd /build/nginx-6hl6ty
+cd /build/${NGINX_BUILD}
 wget --no-check-certificate https://github.com/apache/incubator-pagespeed-ngx/archive/v${NPS_VERSION}.zip
 unzip v${NPS_VERSION}.zip
 nps_dir=$(find . -name "*pagespeed-ngx-${NPS_VERSION}" -type d)
@@ -95,14 +96,14 @@ psol_url=https://dl.google.com/dl/page-speed/psol/${NPS_RELEASE_NUMBER}.tar.gz
 wget --no-check-certificate ${psol_url}
 tar -xzvf $(basename ${psol_url})  # extracts to psol/
 # copy to module path
-cp -a /build/nginx-6hl6ty/${nps_dir} /build/nginx-6hl6ty/nginx-${NGINX_VERSION}/debian/modules/pagespeed
+cp -a /build/${NGINX_BUILD}/${nps_dir} /build/${NGINX_BUILD}/nginx-${NGINX_VERSION}/debian/modules/pagespeed
 
 # nginx
-cd /build/nginx-6hl6ty
+cd /build/${NGINX_BUILD}
 wget --no-check-certificate http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz
 tar -xvzf nginx-${NGINX_VERSION}.tar.gz
 cd nginx-${NGINX_VERSION}/
-./configure --with-cc-opt='-g -O2 -fdebug-prefix-map=/build/nginx-6hl6ty/nginx-${NGINX_VERSION}=. -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-compat --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_geoip_module=dynamic --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module=dynamic --with-http_sub_module --with-http_xslt_module=dynamic --with-stream=dynamic --with-stream_ssl_module --with-stream_ssl_preread_module --with-mail=dynamic --with-mail_ssl_module --add-dynamic-module=/build/nginx-6hl6ty/nginx-${NGINX_VERSION}/debian/modules/pagespeed
+./configure --with-cc-opt='-g -O2 -fdebug-prefix-map=/build/${NGINX_BUILD}/nginx-${NGINX_VERSION}=. -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-compat --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_geoip_module=dynamic --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module=dynamic --with-http_sub_module --with-http_xslt_module=dynamic --with-stream=dynamic --with-stream_ssl_module --with-stream_ssl_preread_module --with-mail=dynamic --with-mail_ssl_module --add-dynamic-module=/build/${NGINX_BUILD}/nginx-${NGINX_VERSION}/debian/modules/pagespeed
 make
 cp objs/ngx_pagespeed.so /usr/lib/nginx/modules/
 ```
